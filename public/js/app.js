@@ -22496,7 +22496,7 @@ var gameStyles = ['commander', 'legacy', 'modern', 'standard', 'vintage'];
 var keywordList = {
   'absorb': 'If a source would deal damage to this creature, prevent N of that damage.',
   'adapt': 'If this creature has no +1/+1 counters on it, put N +1/+1 counter(s) on it.',
-  'affinity': 'This spell costs {1} less to cast for each [quality] you control.',
+  'affinity for': 'This spell costs {1} less to cast for each [quality] you control.',
   'afflict': 'Whenever this creature becomes blocked, defending player loses N life.',
   'afterlife': 'When this creature dies, create N 1/1 white and black Spirit creature token(s) with flying.',
   'aftermath': 'Cast this spell only from your graveyard. Then exile it.',
@@ -22515,7 +22515,6 @@ var keywordList = {
   'bloodthirst': 'If an opponent was dealt damage this turn, this permanent enters the battlefield with N +1/+1 counters on it.',
   'boast': 'Activate this ability only if this creature attacked this turn and only once each turn.',
   'bolster': 'Choose a creature you control with the least toughness or tied for least toughness among creatures you control. Put N +1/+1 counters on that creature.',
-  'bury': 'Destroy [something]. It can\'t be regenerated.',
   'bushido': 'Whenever this creature blocks or becomes blocked, it gets +N/+N until end of turn.',
   'buyback': 'You may pay an additional [cost] as you cast this spell. If the buyback cost was paid, put this spell into its owner’s hand instead of into that player’s graveyard as it resolves.',
   'cascade': 'Return this card from your graveyard to the battlefield. It gains haste. Exile it at the beginning of the next end step or if it would leave the battlefield. Unearth only as a sorcery.',
@@ -22905,6 +22904,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
     return {
       crawledKeywords: [],
       crawledIcons: [],
+      keywordExceptions: ['banding', 'compleated'],
       iconList: _App_vue__WEBPACK_IMPORTED_MODULE_0__.iconList,
       keywordList: _App_vue__WEBPACK_IMPORTED_MODULE_0__.keywordList
     };
@@ -22939,12 +22939,12 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
       var i = 0;
 
       for (var keyword in this.keywordList) {
-        if (text.toLowerCase().includes(keyword)) {
+        if (text.toLowerCase().includes(keyword) && (!this.cardData.name.toLowerCase().includes(keyword) || this.cardData.name.toLowerCase() === keyword) || this.keywordExceptions.includes(keyword)) {
           this.crawledKeywords[i++] = {
             "keyword": keyword,
             "description": this.keywordList[keyword]
           };
-          text = text.replace(new RegExp("\\b".concat(keyword, "\\b"), 'gi'), '==' + keyword + '==');
+          text = text.replace(new RegExp("\\b".concat(keyword, "\\b"), 'i'), '==' + keyword + '==');
         }
       }
 
@@ -23540,7 +23540,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     "class": (0,vue__WEBPACK_IMPORTED_MODULE_0__.normalizeClass)([{
       'hidden': !$data.tooltipShow,
       'block': $data.tooltipShow
-    }, "bg-blue-400 border-0 mb-3 block z-50 font-normal text-sm max-w-xs text-left no-underline break-words rounded-lg"])
+    }, "bg-blue-400 z-50 font-normal text-sm max-w-xs text-left no-underline rounded-lg"])
   }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_1, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.keyword), 1
   /* TEXT */
   ), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_2, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_v_injector, {

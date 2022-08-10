@@ -29,6 +29,8 @@ class Card extends Model
 
     protected $hidden = [
         'id',
-        'uuid'
+        'uuid',
+        'created_at',
+        'updated_at'
     ];
 }

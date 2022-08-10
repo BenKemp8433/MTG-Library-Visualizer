@@ -65,6 +65,10 @@
             return {
                 crawledKeywords: [],
                 crawledIcons: [],
+                keywordExceptions: [
+                    'banding',
+                    'compleated',
+                ],
                 iconList,
                 keywordList
             }
@@ -106,9 +110,13 @@
             crawlTextForKeywords(text){
                 let i = 0;
                 for (let keyword in this.keywordList) {
-                    if (text.toLowerCase().includes(keyword)) {
+                    if (text.toLowerCase().includes(keyword) &&
+                        (!this.cardData.name.toLowerCase().includes(keyword) ||
+                        this.cardData.name.toLowerCase() === keyword) ||
+                        this.keywordExceptions.includes(keyword)
+                    ) {
                         this.crawledKeywords[i++] = {"keyword": keyword, "description": this.keywordList[keyword]};
-                        text = text.replace(new RegExp(`\\b${keyword}\\b`, 'gi'), '=='+keyword+'==');
+                        text = text.replace(new RegExp(`\\b${keyword}\\b`, 'i'), '=='+keyword+'==');
                     }
                 }
                 return this.capitalizeFirstLetter(text);
