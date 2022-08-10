@@ -22794,13 +22794,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_0__);
-
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: "LibraryList",
   data: function data() {
     return {
+      loading: false,
       cardList: 'Sol Ring' + '\n' + 'Angelfire ignition' + '\n' + 'Elspeth Tirel' + '\n' + 'All That Glitters' + '\n' + 'Tamiyo, Compleated Sage'
     };
   },
@@ -22811,10 +22809,13 @@ __webpack_require__.r(__webpack_exports__);
     generate: function generate() {
       var _this = this;
 
-      axios__WEBPACK_IMPORTED_MODULE_0___default().post(route('api.cards.get'), {
+      this.loading = true;
+      axios.post(route('api.cards.get'), {
         nameList: this.cardList
       }).then(function (response) {
         return _this.$emit('fetchedCards', response.data);
+      }).then(function () {
+        return _this.loading = false;
       });
     }
   }
@@ -23151,6 +23152,20 @@ var _hoisted_1 = {
     "grid-template-rows": "auto 48px"
   }
 };
+var _hoisted_2 = {
+  key: 0,
+  "class": "p-2 w-full h-10 bg-blue-300 text-white loading",
+  disabled: ""
+};
+
+var _hoisted_3 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
+  "class": "icon-loading w-6 mx-auto",
+  title: "Loading"
+}, null, -1
+/* HOISTED */
+);
+
+var _hoisted_4 = [_hoisted_3];
 function render(_ctx, _cache, $props, $setup, $data, $options) {
   return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_1, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("textarea", {
     "class": "p-2 w-full h-full resize-none",
@@ -23160,12 +23175,13 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     })
   }, null, 512
   /* NEED_PATCH */
-  ), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.cardList]]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+  ), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.cardList]]), $data.loading ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("button", _hoisted_2, _hoisted_4)) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("button", {
+    key: 1,
     "class": "p-2 w-full h-10 bg-blue-400 hover:bg-blue-500 text-white font-semibold uppercase",
     onClick: _cache[1] || (_cache[1] = function () {
       return $options.generate && $options.generate.apply($options, arguments);
     })
-  }, "Generate")]);
+  }, " Generate "))]);
 }
 
 /***/ }),
