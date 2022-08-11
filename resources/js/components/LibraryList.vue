@@ -8,11 +8,15 @@
             <button class="p-2 w-11/12 h-10 bg-blue-400 hover:bg-blue-500 text-white font-semibold uppercase" @click="generate">
                 Generate
             </button>
-            <button class="p-2 w-1/12 h-10 bg-blue-400 hover:bg-blue-500 text-white font-semibold uppercase" @click="toggleExportMenu">
+            <button class="p-2 w-1/12 h-10 bg-blue-400 hover:bg-blue-500 text-white font-semibold" @click="toggleExportMenu">
                 :
-                <div v-show="exportMenuActive" class="z-50 rounded-lg bg-white text-blue-400 -mt-20">
-                    <button class="p-2 bg-white hover:bg-blue-500 hover:text-white" @click="exportCardList">Export</button>
-                    <button class="p-2 bg-white hover:bg-blue-500 hover:text-white" @click="importCardList">Import</button>
+                <div v-show="exportMenuActive" class="-mt-24 float-right rounded-lg shadow-lg">
+                    <button class="p-2 z-50 w-20 rounded-t-lg border border-b-0 border-grey-400 bg-white text-blue-400 bg-white hover:bg-blue-500 hover:text-white" @click="exportCardList">Export</button>
+                    <button class="p-2 z-50 w-20 rounded-b-lg border border-t-0 border-grey-400 bg-white text-blue-400 bg-white hover:bg-blue-500 hover:text-white">
+                        <label>
+                            <input class="hidden" type="file" ref="doc" @change="importCardList">Import
+                        </label>
+                    </button>
                 </div>
             </button>
         </div>
@@ -20,44 +24,60 @@
 </template>
 
 <script>
-    export default {
-        name: "LibraryList",
+import download from "downloadjs";
+import { appTitle } from '../App.vue'
 
-        data() {
-            return {
-                loading: false,
-                exportMenuActive: false,
-                cardList:
-                    'Odric, Blood-Cursed'
-                    // +'\n'+
-            }
+export default {
+    name: "LibraryList",
+
+    props: [
+        'appTitle'
+    ],
+
+    data() {
+        return {
+            loading: false,
+            exportMenuActive: false,
+            cardList: '',
+            originalTitle: appTitle
+        }
+    },
+
+    methods: {
+        generate() {
+            this.loading = true;
+            axios.post(route('api.cards.get'), {nameList: this.cardList})
+                 .then((response) => this.$emit('fetchedCards', response.data))
+                 .then(() => {
+                     this.loading = false;
+                     this.exportMenuActive = false;
+                 })
         },
 
-        mounted() {
-            this.generate();
+        toggleExportMenu() {
+            return this.exportMenuActive = !this.exportMenuActive;
         },
 
-        methods: {
-            generate() {
-                this.loading = true;
-                axios.post(route('api.cards.get'), {nameList: this.cardList})
-                     .then((response) => this.$emit('fetchedCards', response.data))
-                     .then(() => this.loading = false)
-            },
+        exportCardList() {
+            let exportedCards = {"version": 1, "cards": this.cardList.split('\n')};
+            let documentTitle = this.appTitle !== this.originalTitle ? this.appTitle : 'unnamed cardlist of '+Date.now();
+            download(JSON.stringify(exportedCards), documentTitle, 'text/plain');
+        },
 
-            toggleExportMenu() {
-                return this.exportMenuActive = !this.exportMenuActive;
-            },
+        importCardList() {
+            const reader = new FileReader();
+            let file = this.$refs.doc.files[0];
+            if (file.name.includes(".txt")) {
+                reader.onload = (res) => {
+                    let importedCards = JSON.parse(res.target.result);
 
-            exportCardList() {
-
-            },
-
-            importCardList() {
-                let importedCards = {"version": 1, "cards": ["sol ring", "simic signet"]};
-                this.cardList = importedCards.cards.join('\n');
-                this.generate();
+                    this.cardList = importedCards.cards.join('\n');
+                    this.generate();
+                };
+                reader.onerror = (err) => console.log(err);
+                reader.readAsText(file);
             }
         }
     }
+}
 </script>

@@ -1,10 +1,13 @@
 <template>
     <v-nav
         @update-grid-size="calculateGridSize($event)"
+        @update-document-title="updateDocumentTitle($event)"
     />
 
     <v-library-list
         @fetched-cards="generateImageList($event)"
+
+        :appTitle="appTitle"
     />
 
     <v-library-visuals
@@ -23,6 +26,7 @@
 </template>
 
 <script>
+    export const appTitle = 'MTG Library Visualizer';
     export const gameStyles = [
         'commander',
         'legacy',
@@ -319,7 +323,8 @@
                 imageList: Object,
                 gridSizeInt: 7,
                 cardData: Object,
-                sideBarActive: false
+                sideBarActive: false,
+                appTitle: appTitle
             }
         },
 
@@ -348,6 +353,10 @@
 
             closeSidebar() {
                 this.sideBarActive = false;
+            },
+
+            updateDocumentTitle(name) {
+                this.appTitle = name;
             }
         }
     }

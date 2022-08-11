@@ -8,7 +8,7 @@
     </span>
     <div ref="tooltipRef"
          v-bind:class="{'hidden': !tooltipShow, 'block': tooltipShow}"
-         class="bg-blue-400 z-50 font-normal text-sm max-w-xs text-left no-underline rounded-lg"
+         class="bg-blue-400 z-50 font-normal text-sm max-w-xs text-left no-underline rounded-lg shadow-lg shadow-gray-400"
     >
         <div class="text-white font-semibold p-3 mb-0 border-b border-solid border-slate-100 uppercase rounded-t-lg">
             {{keyword}}

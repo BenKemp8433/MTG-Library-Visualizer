@@ -22487,11 +22487,13 @@ module.exports = {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "appTitle": () => (/* binding */ appTitle),
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__),
 /* harmony export */   "gameStyles": () => (/* binding */ gameStyles),
 /* harmony export */   "iconList": () => (/* binding */ iconList),
 /* harmony export */   "keywordList": () => (/* binding */ keywordList)
 /* harmony export */ });
+var appTitle = 'MTG Library Visualizer';
 var gameStyles = ['commander', 'legacy', 'modern', 'standard', 'vintage'];
 var keywordList = {
   'absorb': 'If a source would deal damage to this creature, prevent N of that damage.',
@@ -22753,7 +22755,8 @@ var iconList = {
       imageList: Object,
       gridSizeInt: 7,
       cardData: Object,
-      sideBarActive: false
+      sideBarActive: false,
+      appTitle: appTitle
     };
   },
   methods: {
@@ -22778,6 +22781,9 @@ var iconList = {
     },
     closeSidebar: function closeSidebar() {
       this.sideBarActive = false;
+    },
+    updateDocumentTitle: function updateDocumentTitle(name) {
+      this.appTitle = name;
     }
   }
 });
@@ -22795,18 +22801,21 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
+/* harmony import */ var downloadjs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! downloadjs */ "./node_modules/downloadjs/download.js");
+/* harmony import */ var downloadjs__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(downloadjs__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _App_vue__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../App.vue */ "./resources/js/App.vue");
+
+
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: "LibraryList",
+  props: ['appTitle'],
   data: function data() {
     return {
       loading: false,
       exportMenuActive: false,
-      cardList: 'Odric, Blood-Cursed' // +'\n'+
-
+      cardList: '',
+      originalTitle: _App_vue__WEBPACK_IMPORTED_MODULE_1__.appTitle
     };
-  },
-  mounted: function mounted() {
-    this.generate();
   },
   methods: {
     generate: function generate() {
@@ -22818,20 +22827,41 @@ __webpack_require__.r(__webpack_exports__);
       }).then(function (response) {
         return _this.$emit('fetchedCards', response.data);
       }).then(function () {
-        return _this.loading = false;
+        _this.loading = false;
+        _this.exportMenuActive = false;
       });
     },
     toggleExportMenu: function toggleExportMenu() {
       return this.exportMenuActive = !this.exportMenuActive;
     },
-    exportCardList: function exportCardList() {},
-    importCardList: function importCardList() {
-      var importedCards = {
+    exportCardList: function exportCardList() {
+      var exportedCards = {
         "version": 1,
-        "cards": ["sol ring", "simic signet"]
+        "cards": this.cardList.split('\n')
       };
-      this.cardList = importedCards.cards.join('\n');
-      this.generate();
+      var documentTitle = this.appTitle !== this.originalTitle ? this.appTitle : 'unnamed cardlist of ' + Date.now();
+      downloadjs__WEBPACK_IMPORTED_MODULE_0___default()(JSON.stringify(exportedCards), documentTitle, 'text/plain');
+    },
+    importCardList: function importCardList() {
+      var _this2 = this;
+
+      var reader = new FileReader();
+      var file = this.$refs.doc.files[0];
+
+      if (file.name.includes(".txt")) {
+        reader.onload = function (res) {
+          var importedCards = JSON.parse(res.target.result);
+          _this2.cardList = importedCards.cards.join('\n');
+
+          _this2.generate();
+        };
+
+        reader.onerror = function (err) {
+          return console.log(err);
+        };
+
+        reader.readAsText(file);
+      }
     }
   }
 });
@@ -22872,16 +22902,21 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
+/* harmony import */ var _App_vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../App.vue */ "./resources/js/App.vue");
+
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: 'Nav',
   data: function data() {
     return {
-      title: 'MTG Library Visualizer'
+      appTitle: _App_vue__WEBPACK_IMPORTED_MODULE_0__.appTitle
     };
   },
   methods: {
     updateGridSize: function updateGridSize(el) {
       this.$emit('updateGridSize', el.target.dataset.changeDirection);
+    },
+    updateDocumentTitle: function updateDocumentTitle(el) {
+      this.$emit('updateDocumentTitle', el.target.value);
     }
   }
 });
@@ -23102,13 +23137,19 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
   return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_v_nav, {
     onUpdateGridSize: _cache[0] || (_cache[0] = function ($event) {
       return $options.calculateGridSize($event);
+    }),
+    onUpdateDocumentTitle: _cache[1] || (_cache[1] = function ($event) {
+      return $options.updateDocumentTitle($event);
     })
   }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_v_library_list, {
-    onFetchedCards: _cache[1] || (_cache[1] = function ($event) {
+    onFetchedCards: _cache[2] || (_cache[2] = function ($event) {
       return $options.generateImageList($event);
-    })
-  }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_v_library_visuals, {
-    onShow: _cache[2] || (_cache[2] = function ($event) {
+    }),
+    appTitle: $data.appTitle
+  }, null, 8
+  /* PROPS */
+  , ["appTitle"]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_v_library_visuals, {
+    onShow: _cache[3] || (_cache[3] = function ($event) {
       return $options.openSidebar($event);
     }),
     imageList: $data.imageList,
@@ -23116,7 +23157,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
   }, null, 8
   /* PROPS */
   , ["imageList", "gridSize"]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_v_sidebar, {
-    onHide: _cache[3] || (_cache[3] = function ($event) {
+    onHide: _cache[4] || (_cache[4] = function ($event) {
       return $options.closeSidebar();
     }),
     cardData: $data.cardData,
@@ -23170,8 +23211,14 @@ var _hoisted_5 = {
 var _hoisted_6 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" : ");
 
 var _hoisted_7 = {
-  "class": "z-50 rounded-lg bg-white text-blue-400 -mt-20"
+  "class": "-mt-24 float-right rounded-lg shadow-lg"
 };
+var _hoisted_8 = {
+  "class": "p-2 z-50 w-20 rounded-b-lg border border-t-0 border-grey-400 bg-white text-blue-400 bg-white hover:bg-blue-500 hover:text-white"
+};
+
+var _hoisted_9 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Import ");
+
 function render(_ctx, _cache, $props, $setup, $data, $options) {
   return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_1, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("textarea", {
     "class": "p-2 w-full h-full resize-none",
@@ -23187,21 +23234,25 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
       return $options.generate && $options.generate.apply($options, arguments);
     })
   }, " Generate "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
-    "class": "p-2 w-1/12 h-10 bg-blue-400 hover:bg-blue-500 text-white font-semibold uppercase",
+    "class": "p-2 w-1/12 h-10 bg-blue-400 hover:bg-blue-500 text-white font-semibold",
     onClick: _cache[4] || (_cache[4] = function () {
       return $options.toggleExportMenu && $options.toggleExportMenu.apply($options, arguments);
     })
   }, [_hoisted_6, (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_7, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
-    "class": "p-2 bg-white hover:bg-blue-500 hover:text-white",
+    "class": "p-2 z-50 w-20 rounded-t-lg border border-b-0 border-grey-400 bg-white text-blue-400 bg-white hover:bg-blue-500 hover:text-white",
     onClick: _cache[2] || (_cache[2] = function () {
       return $options.exportCardList && $options.exportCardList.apply($options, arguments);
     })
-  }, "Export"), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
-    "class": "p-2 bg-white hover:bg-blue-500 hover:text-white",
-    onClick: _cache[3] || (_cache[3] = function () {
+  }, "Export"), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", _hoisted_8, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
+    "class": "hidden",
+    type: "file",
+    ref: "doc",
+    onChange: _cache[3] || (_cache[3] = function () {
       return $options.importCardList && $options.importCardList.apply($options, arguments);
     })
-  }, "Import")], 512
+  }, null, 544
+  /* HYDRATE_EVENTS, NEED_PATCH */
+  ), _hoisted_9])])], 512
   /* NEED_PATCH */
   ), [[vue__WEBPACK_IMPORTED_MODULE_0__.vShow, $data.exportMenuActive]])])]))]);
 }
@@ -23264,11 +23315,9 @@ __webpack_require__.r(__webpack_exports__);
 var _hoisted_1 = {
   "class": "col-span-12 bg-blue-400 shadow-lg shadow-gray-400 flex items-center justify-between"
 };
-var _hoisted_2 = {
-  "class": "px-2 py-2 text-3xl text-white"
-};
+var _hoisted_2 = ["value"];
 var _hoisted_3 = {
-  "class": "mx-2 w-16 h-min text-3xl flex justify-between"
+  "class": "mx-2 w-16 h-min text-3xl flex justify-between text-white"
 };
 
 var _hoisted_4 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
@@ -23289,14 +23338,20 @@ var _hoisted_6 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementV
 
 var _hoisted_7 = [_hoisted_6];
 function render(_ctx, _cache, $props, $setup, $data, $options) {
-  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("nav", _hoisted_1, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h1", _hoisted_2, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($data.title), 1
-  /* TEXT */
-  ), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_3, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
-    onClick: _cache[0] || (_cache[0] = function () {
+  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("nav", _hoisted_1, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
+    "class": "px-2 py-2 text-3xl text-white bg-blue-400 w-full",
+    onChange: _cache[0] || (_cache[0] = function () {
+      return $options.updateDocumentTitle && $options.updateDocumentTitle.apply($options, arguments);
+    }),
+    value: $data.appTitle
+  }, null, 40
+  /* PROPS, HYDRATE_EVENTS */
+  , _hoisted_2), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_3, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+    onClick: _cache[1] || (_cache[1] = function () {
       return $options.updateGridSize && $options.updateGridSize.apply($options, arguments);
     })
   }, _hoisted_5), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
-    onClick: _cache[1] || (_cache[1] = function () {
+    onClick: _cache[2] || (_cache[2] = function () {
       return $options.updateGridSize && $options.updateGridSize.apply($options, arguments);
     })
   }, _hoisted_7)])]);
@@ -23562,7 +23617,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     "class": (0,vue__WEBPACK_IMPORTED_MODULE_0__.normalizeClass)([{
       'hidden': !$data.tooltipShow,
       'block': $data.tooltipShow
-    }, "bg-blue-400 z-50 font-normal text-sm max-w-xs text-left no-underline rounded-lg"])
+    }, "bg-blue-400 z-50 font-normal text-sm max-w-xs text-left no-underline rounded-lg shadow-lg shadow-gray-400"])
   }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_1, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.keyword), 1
   /* TEXT */
   ), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_2, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_v_injector, {
@@ -23769,6 +23824,178 @@ module.exports = function (cssWithMappingToString) {
 
   return list;
 };
+
+/***/ }),
+
+/***/ "./node_modules/downloadjs/download.js":
+/*!*********************************************!*\
+  !*** ./node_modules/downloadjs/download.js ***!
+  \*********************************************/
+/***/ (function(module, exports) {
+
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;//download.js v4.2, by dandavis; 2008-2016. [MIT] see http://danml.com/download.html for tests/usage
+// v1 landed a FF+Chrome compat way of downloading strings to local un-named files, upgraded to use a hidden frame and optional mime
+// v2 added named files via a[download], msSaveBlob, IE (10+) support, and window.URL support for larger+faster saves than dataURLs
+// v3 added dataURL and Blob Input, bind-toggle arity, and legacy dataURL fallback was improved with force-download mime and base64 support. 3.1 improved safari handling.
+// v4 adds AMD/UMD, commonJS, and plain browser support
+// v4.1 adds url download capability via solo URL argument (same domain/CORS only)
+// v4.2 adds semantic variable names, long (over 2MB) dataURL support, and hidden by default temp anchors
+// https://github.com/rndme/download
+
+(function (root, factory) {
+	if (true) {
+		// AMD. Register as an anonymous module.
+		!(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+		__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
+		(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
+		__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+	} else {}
+}(this, function () {
+
+	return function download(data, strFileName, strMimeType) {
+
+		var self = window, // this script is only for browsers anyway...
+			defaultMime = "application/octet-stream", // this default mime also triggers iframe downloads
+			mimeType = strMimeType || defaultMime,
+			payload = data,
+			url = !strFileName && !strMimeType && payload,
+			anchor = document.createElement("a"),
+			toString = function(a){return String(a);},
+			myBlob = (self.Blob || self.MozBlob || self.WebKitBlob || toString),
+			fileName = strFileName || "download",
+			blob,
+			reader;
+			myBlob= myBlob.call ? myBlob.bind(self) : Blob ;
+	  
+		if(String(this)==="true"){ //reverse arguments, allowing download.bind(true, "text/xml", "export.xml") to act as a callback
+			payload=[payload, mimeType];
+			mimeType=payload[0];
+			payload=payload[1];
+		}
+
+
+		if(url && url.length< 2048){ // if no filename and no mime, assume a url was passed as the only argument
+			fileName = url.split("/").pop().split("?")[0];
+			anchor.href = url; // assign href prop to temp anchor
+		  	if(anchor.href.indexOf(url) !== -1){ // if the browser determines that it's a potentially valid url path:
+        		var ajax=new XMLHttpRequest();
+        		ajax.open( "GET", url, true);
+        		ajax.responseType = 'blob';
+        		ajax.onload= function(e){ 
+				  download(e.target.response, fileName, defaultMime);
+				};
+        		setTimeout(function(){ ajax.send();}, 0); // allows setting custom ajax headers using the return:
+			    return ajax;
+			} // end if valid url?
+		} // end if url?
+
+
+		//go ahead and download dataURLs right away
+		if(/^data:([\w+-]+\/[\w+.-]+)?[,;]/.test(payload)){
+		
+			if(payload.length > (1024*1024*1.999) && myBlob !== toString ){
+				payload=dataUrlToBlob(payload);
+				mimeType=payload.type || defaultMime;
+			}else{			
+				return navigator.msSaveBlob ?  // IE10 can't do a[download], only Blobs:
+					navigator.msSaveBlob(dataUrlToBlob(payload), fileName) :
+					saver(payload) ; // everyone else can save dataURLs un-processed
+			}
+			
+		}else{//not data url, is it a string with special needs?
+			if(/([\x80-\xff])/.test(payload)){			  
+				var i=0, tempUiArr= new Uint8Array(payload.length), mx=tempUiArr.length;
+				for(i;i<mx;++i) tempUiArr[i]= payload.charCodeAt(i);
+			 	payload=new myBlob([tempUiArr], {type: mimeType});
+			}		  
+		}
+		blob = payload instanceof myBlob ?
+			payload :
+			new myBlob([payload], {type: mimeType}) ;
+
+
+		function dataUrlToBlob(strUrl) {
+			var parts= strUrl.split(/[:;,]/),
+			type= parts[1],
+			decoder= parts[2] == "base64" ? atob : decodeURIComponent,
+			binData= decoder( parts.pop() ),
+			mx= binData.length,
+			i= 0,
+			uiArr= new Uint8Array(mx);
+
+			for(i;i<mx;++i) uiArr[i]= binData.charCodeAt(i);
+
+			return new myBlob([uiArr], {type: type});
+		 }
+
+		function saver(url, winMode){
+
+			if ('download' in anchor) { //html5 A[download]
+				anchor.href = url;
+				anchor.setAttribute("download", fileName);
+				anchor.className = "download-js-link";
+				anchor.innerHTML = "downloading...";
+				anchor.style.display = "none";
+				document.body.appendChild(anchor);
+				setTimeout(function() {
+					anchor.click();
+					document.body.removeChild(anchor);
+					if(winMode===true){setTimeout(function(){ self.URL.revokeObjectURL(anchor.href);}, 250 );}
+				}, 66);
+				return true;
+			}
+
+			// handle non-a[download] safari as best we can:
+			if(/(Version)\/(\d+)\.(\d+)(?:\.(\d+))?.*Safari\//.test(navigator.userAgent)) {
+				if(/^data:/.test(url))	url="data:"+url.replace(/^data:([\w\/\-\+]+)/, defaultMime);
+				if(!window.open(url)){ // popup blocked, offer direct download:
+					if(confirm("Displaying New Document\n\nUse Save As... to download, then click back to return to this page.")){ location.href=url; }
+				}
+				return true;
+			}
+
+			//do iframe dataURL download (old ch+FF):
+			var f = document.createElement("iframe");
+			document.body.appendChild(f);
+
+			if(!winMode && /^data:/.test(url)){ // force a mime that will download:
+				url="data:"+url.replace(/^data:([\w\/\-\+]+)/, defaultMime);
+			}
+			f.src=url;
+			setTimeout(function(){ document.body.removeChild(f); }, 333);
+
+		}//end saver
+
+
+
+
+		if (navigator.msSaveBlob) { // IE10+ : (has Blob, but not a[download] or URL)
+			return navigator.msSaveBlob(blob, fileName);
+		}
+
+		if(self.URL){ // simple fast and modern way using Blob and URL:
+			saver(self.URL.createObjectURL(blob), true);
+		}else{
+			// handle non-Blob()+non-URL browsers:
+			if(typeof blob === "string" || blob.constructor===toString ){
+				try{
+					return saver( "data:" +  mimeType   + ";base64,"  +  self.btoa(blob)  );
+				}catch(y){
+					return saver( "data:" +  mimeType   + "," + encodeURIComponent(blob)  );
+				}
+			}
+
+			// Blob but not URL support:
+			reader=new FileReader();
+			reader.onload=function(e){
+				saver(this.result);
+			};
+			reader.readAsDataURL(blob);
+		}
+		return true;
+	}; /* end download() */
+}));
+
 
 /***/ }),
 
@@ -24332,6 +24559,7 @@ exports["default"] = (sfc, props) => {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "appTitle": () => (/* reexport safe */ _App_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__.appTitle),
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__),
 /* harmony export */   "gameStyles": () => (/* reexport safe */ _App_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__.gameStyles),
 /* harmony export */   "iconList": () => (/* reexport safe */ _App_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__.iconList),
@@ -24562,6 +24790,7 @@ if (false) {}
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "appTitle": () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_use_0_node_modules_vue_loader_dist_index_js_ruleSet_0_use_0_App_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__.appTitle),
 /* harmony export */   "default": () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_use_0_node_modules_vue_loader_dist_index_js_ruleSet_0_use_0_App_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__["default"]),
 /* harmony export */   "gameStyles": () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_use_0_node_modules_vue_loader_dist_index_js_ruleSet_0_use_0_App_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__.gameStyles),
 /* harmony export */   "iconList": () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_use_0_node_modules_vue_loader_dist_index_js_ruleSet_0_use_0_App_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__.iconList),
@@ -25075,7 +25304,7 @@ function compileToFunction(template, options) {
 /******/ 		};
 /******/ 	
 /******/ 		// Execute the module function
-/******/ 		__webpack_modules__[moduleId](module, module.exports, __webpack_require__);
+/******/ 		__webpack_modules__[moduleId].call(module.exports, module, module.exports, __webpack_require__);
 /******/ 	
 /******/ 		// Return the exports of the module
 /******/ 		return module.exports;
