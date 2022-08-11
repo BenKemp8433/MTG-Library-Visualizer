@@ -53,6 +53,7 @@
 
 <script>
     import { iconList, keywordList } from "../App.vue";
+    import { crawlTextForIcons } from "../functions/cardIcon";
 
     export default {
         name: "Sidebar",
@@ -67,7 +68,18 @@
                 crawledIcons: [],
                 keywordExceptions: [
                     'banding',
+                    'changeling',
                     'compleated',
+                    'enchant',
+                    'escape',
+                    'flying',
+                    'frenzy',
+                    'mill',
+                    'mills',
+                    'morph',
+                    'protection',
+                    'shadow',
+                    'storm',
                 ],
                 iconList,
                 keywordList
@@ -92,9 +104,9 @@
 
                 oracleText = this.crawlTextForBreaks(oracleText);
                 oracleText = this.crawlTextForKeywords(oracleText);
-                oracleText = this.crawlTextForIcons(oracleText);
-
-                return oracleText;
+                let response = crawlTextForIcons(oracleText, this.crawledIcons);
+                this.crawledIcons = response.icons;
+                return response.text;
             }
         },
 
@@ -120,14 +132,6 @@
                     }
                 }
                 return this.capitalizeFirstLetter(text);
-            },
-
-            crawlTextForIcons(text){
-                const matches = text.match(/(\{(\D{1,3}|(\d{1,3})|(\d\/\D)|(\D\/\D\/\D))})/g) ?? [];
-                matches.forEach((icon, i) => {
-                    this.crawledIcons[i] = {icon: icon, layers: this.iconList[icon]};
-                });
-                return text.replace(/\{/g, '=={').replace(/}/g, '}==');
             },
 
             capitalizeFirstLetter([ first, ...rest ], locale = navigator.language) {

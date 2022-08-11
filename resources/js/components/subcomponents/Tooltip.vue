@@ -26,6 +26,7 @@
 <script>
 import { createPopper } from "@popperjs/core";
 import { iconList } from "../../App.vue";
+import { crawlTextForIcons } from "../../functions/cardIcon";
 
 export default {
     name: "Tooltip",
@@ -45,7 +46,9 @@ export default {
 
     computed: {
         crawledDescription() {
-            return this.crawlTextForIcons(this.description);
+            let response = crawlTextForIcons(this.description, this.crawledIcons);
+            this.crawledIcons = response.icons;
+            return response.text;
         }
     },
 
@@ -59,14 +62,6 @@ export default {
                     placement: "top"
                 });
             }
-        },
-
-        crawlTextForIcons(text){
-            const matches = text.match(/(\{(\D{1,3}|(\d{1,3})|(\d\/\D)|(\D\/\D\/\D))})/g) ?? [];
-            matches.forEach((icon, i) => {
-                this.crawledIcons[i] = {icon: icon, layers: this.iconList[icon]};
-            });
-            return text.replace(/\{/g, '=={').replace(/}/g, '}==');
         }
     }
 }

@@ -22519,7 +22519,7 @@ var keywordList = {
   'buyback': 'You may pay an additional [cost] as you cast this spell. If the buyback cost was paid, put this spell into its owner’s hand instead of into that player’s graveyard as it resolves.',
   'cascade': 'Return this card from your graveyard to the battlefield. It gains haste. Exile it at the beginning of the next end step or if it would leave the battlefield. Unearth only as a sorcery.',
   'casualty': 'As you cast this spell, you may sacrifice a creature with power N or greater. When you do, copy this spell.',
-  'champion': 'When this enters the battlefield, sacrifice it unless you exile another creature you control. When this leaves the battlefield, that card returns to the battlefield.',
+  'champion a': 'When this enters the battlefield, sacrifice it unless you exile another creature you control. When this leaves the battlefield, that card returns to the battlefield.',
   'changeling': 'This card is every creature type.',
   'cipher': 'Then you may exile this spell card encoded on a creature you control. Whenever that creature deals combat damage to a player, its controller may cast a copy of this card without paying its mana cost.',
   'clash': 'Each clashing player reveals the top card of their library, then puts that card on the top or bottom. A player wins if their card had a higher mana value.',
@@ -22570,6 +22570,7 @@ var keywordList = {
   'fateseal': 'To fateseal N, look at the top N cards of an opponent\'s library, then put any number of them on the bottom of that player\'s library and the rest on top in any order.',
   'fear': 'This creature can\'t be blocked except by artifact creatures and/or black creatures.',
   'fight': 'Each deals damage equal to its power to the other.',
+  'fights': 'Each deals damage equal to its power to the other.',
   'first strike': 'This creature deals combat damage before creatures without first strike.',
   'flanking': 'Whenever a creature without flanking blocks this creature, the blocking creature gets -1/-1 until end of turn.',
   'flash': 'You may cast this spell any time you could cast an instant.',
@@ -22610,6 +22611,7 @@ var keywordList = {
   'menace': 'This creature can\'t be blocked except by two or more creatures.',
   'mentor': 'Whenever this creature attacks, put a +1/+1 counter on target attacking creature with lesser power.',
   'mill': 'Put the top N cards from the library into your/their graveyard.',
+  'mills': 'Put the top N cards from the library into your/their graveyard.',
   'miracle': 'You may cast this card for its Miracle cost when you draw it if it\'s the first card you drew this turn.',
   'modular': 'This enters the battlefield with N +1/+1 counters on it. When it dies, you may put its +1/+1 counters on target artifact creature.',
   'monstrosity': 'If this permanent isn\'t monstrous, put N +1/+1 counters on it and it becomes monstrous.',
@@ -22798,7 +22800,9 @@ __webpack_require__.r(__webpack_exports__);
   data: function data() {
     return {
       loading: false,
-      cardList: 'Sol Ring' + '\n' + 'Angelfire ignition' + '\n' + 'Elspeth Tirel' + '\n' + 'All That Glitters' + '\n' + 'Tamiyo, Compleated Sage'
+      exportMenuActive: false,
+      cardList: 'Odric, Blood-Cursed' // +'\n'+
+
     };
   },
   mounted: function mounted() {
@@ -22816,6 +22820,18 @@ __webpack_require__.r(__webpack_exports__);
       }).then(function () {
         return _this.loading = false;
       });
+    },
+    toggleExportMenu: function toggleExportMenu() {
+      return this.exportMenuActive = !this.exportMenuActive;
+    },
+    exportCardList: function exportCardList() {},
+    importCardList: function importCardList() {
+      var importedCards = {
+        "version": 1,
+        "cards": ["sol ring", "simic signet"]
+      };
+      this.cardList = importedCards.cards.join('\n');
+      this.generate();
     }
   }
 });
@@ -22884,6 +22900,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var _App_vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../App.vue */ "./resources/js/App.vue");
+/* harmony import */ var _functions_cardIcon__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../functions/cardIcon */ "./resources/js/functions/cardIcon.js");
 function _toArray(arr) { return _arrayWithHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableRest(); }
 
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
@@ -22897,6 +22914,7 @@ function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && iter[Symb
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
 
+
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: "Sidebar",
   props: ['cardData', 'active'],
@@ -22904,7 +22922,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
     return {
       crawledKeywords: [],
       crawledIcons: [],
-      keywordExceptions: ['banding', 'compleated'],
+      keywordExceptions: ['banding', 'changeling', 'compleated', 'enchant', 'escape', 'flying', 'frenzy', 'mill', 'mills', 'morph', 'protection', 'shadow', 'storm'],
       iconList: _App_vue__WEBPACK_IMPORTED_MODULE_0__.iconList,
       keywordList: _App_vue__WEBPACK_IMPORTED_MODULE_0__.keywordList
     };
@@ -22924,8 +22942,9 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
       var oracleText = this.cardData.oracle_text;
       oracleText = this.crawlTextForBreaks(oracleText);
       oracleText = this.crawlTextForKeywords(oracleText);
-      oracleText = this.crawlTextForIcons(oracleText);
-      return oracleText;
+      var response = (0,_functions_cardIcon__WEBPACK_IMPORTED_MODULE_1__.crawlTextForIcons)(oracleText, this.crawledIcons);
+      this.crawledIcons = response.icons;
+      return response.text;
     }
   },
   methods: {
@@ -22949,19 +22968,6 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
       }
 
       return this.capitalizeFirstLetter(text);
-    },
-    crawlTextForIcons: function crawlTextForIcons(text) {
-      var _text$match,
-          _this = this;
-
-      var matches = (_text$match = text.match(/(\{(\D{1,3}|(\d{1,3})|(\d\/\D)|(\D\/\D\/\D))})/g)) !== null && _text$match !== void 0 ? _text$match : [];
-      matches.forEach(function (icon, i) {
-        _this.crawledIcons[i] = {
-          icon: icon,
-          layers: _this.iconList[icon]
-        };
-      });
-      return text.replace(/\{/g, '=={').replace(/}/g, '}==');
     },
     capitalizeFirstLetter: function capitalizeFirstLetter(_ref) {
       var _ref2 = _toArray(_ref),
@@ -23032,8 +23038,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _popperjs_core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @popperjs/core */ "./node_modules/@popperjs/core/lib/popper.js");
+/* harmony import */ var _popperjs_core__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @popperjs/core */ "./node_modules/@popperjs/core/lib/popper.js");
 /* harmony import */ var _App_vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../App.vue */ "./resources/js/App.vue");
+/* harmony import */ var _functions_cardIcon__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../functions/cardIcon */ "./resources/js/functions/cardIcon.js");
+
 
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
@@ -23048,7 +23056,9 @@ __webpack_require__.r(__webpack_exports__);
   },
   computed: {
     crawledDescription: function crawledDescription() {
-      return this.crawlTextForIcons(this.description);
+      var response = (0,_functions_cardIcon__WEBPACK_IMPORTED_MODULE_1__.crawlTextForIcons)(this.description, this.crawledIcons);
+      this.crawledIcons = response.icons;
+      return response.text;
     }
   },
   methods: {
@@ -23057,23 +23067,10 @@ __webpack_require__.r(__webpack_exports__);
         this.tooltipShow = false;
       } else {
         this.tooltipShow = true;
-        (0,_popperjs_core__WEBPACK_IMPORTED_MODULE_1__.createPopper)(this.$refs.btnRef, this.$refs.tooltipRef, {
+        (0,_popperjs_core__WEBPACK_IMPORTED_MODULE_2__.createPopper)(this.$refs.btnRef, this.$refs.tooltipRef, {
           placement: "top"
         });
       }
-    },
-    crawlTextForIcons: function crawlTextForIcons(text) {
-      var _text$match,
-          _this = this;
-
-      var matches = (_text$match = text.match(/(\{(\D{1,3}|(\d{1,3})|(\d\/\D)|(\D\/\D\/\D))})/g)) !== null && _text$match !== void 0 ? _text$match : [];
-      matches.forEach(function (icon, i) {
-        _this.crawledIcons[i] = {
-          icon: icon,
-          layers: _this.iconList[icon]
-        };
-      });
-      return text.replace(/\{/g, '=={').replace(/}/g, '}==');
     }
   }
 });
@@ -23166,6 +23163,15 @@ var _hoisted_3 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementV
 );
 
 var _hoisted_4 = [_hoisted_3];
+var _hoisted_5 = {
+  key: 1
+};
+
+var _hoisted_6 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" : ");
+
+var _hoisted_7 = {
+  "class": "z-50 rounded-lg bg-white text-blue-400 -mt-20"
+};
 function render(_ctx, _cache, $props, $setup, $data, $options) {
   return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_1, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("textarea", {
     "class": "p-2 w-full h-full resize-none",
@@ -23175,13 +23181,29 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     })
   }, null, 512
   /* NEED_PATCH */
-  ), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.cardList]]), $data.loading ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("button", _hoisted_2, _hoisted_4)) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("button", {
-    key: 1,
-    "class": "p-2 w-full h-10 bg-blue-400 hover:bg-blue-500 text-white font-semibold uppercase",
+  ), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.cardList]]), $data.loading ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("button", _hoisted_2, _hoisted_4)) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_5, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+    "class": "p-2 w-11/12 h-10 bg-blue-400 hover:bg-blue-500 text-white font-semibold uppercase",
     onClick: _cache[1] || (_cache[1] = function () {
       return $options.generate && $options.generate.apply($options, arguments);
     })
-  }, " Generate "))]);
+  }, " Generate "), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+    "class": "p-2 w-1/12 h-10 bg-blue-400 hover:bg-blue-500 text-white font-semibold uppercase",
+    onClick: _cache[4] || (_cache[4] = function () {
+      return $options.toggleExportMenu && $options.toggleExportMenu.apply($options, arguments);
+    })
+  }, [_hoisted_6, (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_7, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+    "class": "p-2 bg-white hover:bg-blue-500 hover:text-white",
+    onClick: _cache[2] || (_cache[2] = function () {
+      return $options.exportCardList && $options.exportCardList.apply($options, arguments);
+    })
+  }, "Export"), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+    "class": "p-2 bg-white hover:bg-blue-500 hover:text-white",
+    onClick: _cache[3] || (_cache[3] = function () {
+      return $options.importCardList && $options.importCardList.apply($options, arguments);
+    })
+  }, "Import")], 512
+  /* NEED_PATCH */
+  ), [[vue__WEBPACK_IMPORTED_MODULE_0__.vShow, $data.exportMenuActive]])])]))]);
 }
 
 /***/ }),
@@ -23615,6 +23637,38 @@ app.component('v-icon', _components_subcomponents_Icon_vue__WEBPACK_IMPORTED_MOD
 app.component('v-tooltip', _components_subcomponents_Tooltip_vue__WEBPACK_IMPORTED_MODULE_7__["default"]);
 app.component('v-injector', _components_subcomponents_Injector_vue__WEBPACK_IMPORTED_MODULE_8__["default"]);
 app.mount('#app');
+
+/***/ }),
+
+/***/ "./resources/js/functions/cardIcon.js":
+/*!********************************************!*\
+  !*** ./resources/js/functions/cardIcon.js ***!
+  \********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "crawlTextForIcons": () => (/* binding */ crawlTextForIcons)
+/* harmony export */ });
+/* harmony import */ var _App_vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../App.vue */ "./resources/js/App.vue");
+
+function crawlTextForIcons(text, crawledIcons) {
+  var _text$match;
+
+  var matches = (_text$match = text.match(/(\{(\D{1,3}|(\d{1,3})|(\d\/\D)|(\D\/\D\/\D))})/g)) !== null && _text$match !== void 0 ? _text$match : [];
+  matches.forEach(function (icon, i) {
+    crawledIcons[i] = {
+      icon: icon,
+      layers: _App_vue__WEBPACK_IMPORTED_MODULE_0__.iconList[icon]
+    };
+  });
+  var delimitedText = text.replace(/\{/g, '=={').replace(/}/g, '}==');
+  return {
+    icons: crawledIcons,
+    text: delimitedText
+  };
+}
 
 /***/ }),
 

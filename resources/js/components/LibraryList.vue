@@ -4,9 +4,18 @@
         <button v-if="loading" class="p-2 w-full h-10 bg-blue-300 text-white loading" disabled>
             <div class="icon-loading w-6 mx-auto" title="Loading"></div>
         </button>
-        <button v-else class="p-2 w-full h-10 bg-blue-400 hover:bg-blue-500 text-white font-semibold uppercase" @click="generate">
-            Generate
-        </button>
+        <div v-else>
+            <button class="p-2 w-11/12 h-10 bg-blue-400 hover:bg-blue-500 text-white font-semibold uppercase" @click="generate">
+                Generate
+            </button>
+            <button class="p-2 w-1/12 h-10 bg-blue-400 hover:bg-blue-500 text-white font-semibold uppercase" @click="toggleExportMenu">
+                :
+                <div v-show="exportMenuActive" class="z-50 rounded-lg bg-white text-blue-400 -mt-20">
+                    <button class="p-2 bg-white hover:bg-blue-500 hover:text-white" @click="exportCardList">Export</button>
+                    <button class="p-2 bg-white hover:bg-blue-500 hover:text-white" @click="importCardList">Import</button>
+                </div>
+            </button>
+        </div>
     </div>
 </template>
 
@@ -17,16 +26,10 @@
         data() {
             return {
                 loading: false,
+                exportMenuActive: false,
                 cardList:
-                    'Sol Ring'
-                    +'\n'+
-                    'Angelfire ignition'
-                    +'\n'+
-                    'Elspeth Tirel'
-                    +'\n'+
-                    'All That Glitters'
-                    +'\n'+
-                    'Tamiyo, Compleated Sage'
+                    'Odric, Blood-Cursed'
+                    // +'\n'+
             }
         },
 
@@ -40,6 +43,20 @@
                 axios.post(route('api.cards.get'), {nameList: this.cardList})
                      .then((response) => this.$emit('fetchedCards', response.data))
                      .then(() => this.loading = false)
+            },
+
+            toggleExportMenu() {
+                return this.exportMenuActive = !this.exportMenuActive;
+            },
+
+            exportCardList() {
+
+            },
+
+            importCardList() {
+                let importedCards = {"version": 1, "cards": ["sol ring", "simic signet"]};
+                this.cardList = importedCards.cards.join('\n');
+                this.generate();
             }
         }
     }
