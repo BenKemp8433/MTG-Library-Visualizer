@@ -22489,12 +22489,17 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "appTitle": () => (/* binding */ appTitle),
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__),
-/* harmony export */   "gameStyles": () => (/* binding */ gameStyles),
 /* harmony export */   "iconList": () => (/* binding */ iconList),
 /* harmony export */   "keywordList": () => (/* binding */ keywordList)
 /* harmony export */ });
-var appTitle = 'MTG Library Visualizer';
-var gameStyles = ['commander', 'legacy', 'modern', 'standard', 'vintage'];
+var appTitle = 'MTG Library Visualizer'; // export const gameStyles = [
+//     'commander',
+//     'legacy',
+//     'modern',
+//     'standard',
+//     'vintage'
+// ];
+
 var keywordList = {
   'absorb': 'If a source would deal damage to this creature, prevent N of that damage.',
   'adapt': 'If this creature has no +1/+1 counters on it, put N +1/+1 counter(s) on it.',
@@ -23343,7 +23348,8 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     onChange: _cache[0] || (_cache[0] = function () {
       return $options.updateDocumentTitle && $options.updateDocumentTitle.apply($options, arguments);
     }),
-    value: $data.appTitle
+    value: $data.appTitle,
+    placeholder: "Name your card list"
   }, null, 40
   /* PROPS, HYDRATE_EVENTS */
   , _hoisted_2), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_3, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
@@ -23432,7 +23438,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
       return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_1, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h2", _hoisted_2, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)((0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.cardData.name) + " ", 1
       /* TEXT */
       ), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
-        "class": "float-right",
+        "class": "fixed w-9 top-14 right-6 bg-blue-400 hover:bg-blue-500 text-white rounded-full shadow-lg shadow-gray-400",
         onClick: _cache[0] || (_cache[0] = function ($event) {
           return $options.closeSidebar();
         })
@@ -23744,7 +23750,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\ntr:nth-child(even) {background: #eee}\ntr:nth-child(odd):not(:first-child) {background: #fff}\n.sideBar {\n        top:51px;\n        height:calc(100vh - 51px);\n        z-index: 10;\n        background-color: #fff;\n}\n    /* Sliding animation */\n.slide-fade-enter-active,\n    .slide-fade-leave-active {transition: all 0.3s ease-out;}\n.slide-fade-enter-from,\n    .slide-fade-leave-to {transform: translateX(50vw);}\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\ntr:nth-child(even) {background: #eee}\ntr:nth-child(odd):not(:first-child) {background: #fff}\n.sideBar {\n    top:51px;\n    height:calc(100vh - 51px);\n    z-index: 10;\n    background-color: #fff;\n}\n/* Sliding animation */\n.slide-fade-enter-active,\n.slide-fade-leave-active {transition: all 0.3s ease-out;}\n.slide-fade-enter-from,\n.slide-fade-leave-to {transform: translateX(50vw);}\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -24561,7 +24567,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "appTitle": () => (/* reexport safe */ _App_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__.appTitle),
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__),
-/* harmony export */   "gameStyles": () => (/* reexport safe */ _App_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__.gameStyles),
 /* harmony export */   "iconList": () => (/* reexport safe */ _App_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__.iconList),
 /* harmony export */   "keywordList": () => (/* reexport safe */ _App_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__.keywordList)
 /* harmony export */ });
@@ -24792,7 +24797,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "appTitle": () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_use_0_node_modules_vue_loader_dist_index_js_ruleSet_0_use_0_App_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__.appTitle),
 /* harmony export */   "default": () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_use_0_node_modules_vue_loader_dist_index_js_ruleSet_0_use_0_App_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__["default"]),
-/* harmony export */   "gameStyles": () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_use_0_node_modules_vue_loader_dist_index_js_ruleSet_0_use_0_App_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__.gameStyles),
 /* harmony export */   "iconList": () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_use_0_node_modules_vue_loader_dist_index_js_ruleSet_0_use_0_App_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__.iconList),
 /* harmony export */   "keywordList": () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_use_0_node_modules_vue_loader_dist_index_js_ruleSet_0_use_0_App_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__.keywordList)
 /* harmony export */ });

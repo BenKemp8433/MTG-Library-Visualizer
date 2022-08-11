@@ -9,17 +9,17 @@
 </template>
 
 <script>
-    export default {
-        name: "LibraryVisuals",
-        props: [
-            'imageList',
-            'gridSize'
-        ],
+export default {
+    name: "LibraryVisuals",
+    props: [
+        'imageList',
+        'gridSize'
+    ],
 
-        methods: {
-            show(card){
-                this.$emit('show', card)
-            }
+    methods: {
+        show(card){
+            this.$emit('show', card)
         }
     }
+}
 </script>
