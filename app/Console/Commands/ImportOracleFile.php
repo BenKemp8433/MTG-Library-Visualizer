@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\Card;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Console\Command;
 
@@ -93,7 +94,25 @@ class ImportOracleFile extends Command
 
     private function getOracleData(): array
     {
+        $bulkdataObject = json_decode(file_get_contents(config('services.scryfall.host').config('services.scryfall.bulkdata')));
+        $bulkdataTimestamp = Carbon::parse($bulkdataObject->updated_at)->format('YmdHis');
+
         $oracleFiles = scandir($this->oracleDirectory, SCANDIR_SORT_DESCENDING);
-        return json_decode(file_get_contents($this->oracleDirectory.'/'.$oracleFiles[0]), true);
+        $lastOracleTimestamp = $oracleFiles[0];
+        $lastOracleTimestamp = str_replace('oracle-cards-', '', $lastOracleTimestamp);
+        $lastOracleTimestamp = str_replace('.json', '', $lastOracleTimestamp);
+
+        if ($bulkdataTimestamp > $lastOracleTimestamp) {
+            $this->info('Downloading new oracle file from external uri.');
+            file_put_contents(
+                $this->oracleDirectory.'/oracle-cards-'.$bulkdataTimestamp.'.json',
+                file_get_contents($bulkdataObject->download_uri)
+            );
+            $oracleFileTimestamp = $bulkdataTimestamp;
+        } else {
+            $oracleFileTimestamp = $lastOracleTimestamp;
+        }
+
+        return json_decode(file_get_contents($this->oracleDirectory.'/oracle-cards-'.$oracleFileTimestamp.'.json'), true);
     }
 }
